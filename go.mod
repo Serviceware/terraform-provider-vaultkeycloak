@@ -1,4 +1,4 @@
-module terraform-povider-vault-keycloak
+module github.com/Serviceware/terraform-provider-vault-keycloak
 
 go 1.16
 
