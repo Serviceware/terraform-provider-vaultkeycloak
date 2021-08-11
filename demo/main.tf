@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vaultkeycloak = {
       version = "0.1.0"
-      source  = "github.com/Serviceware/vault-keycloak"
+      source  = "Serviceware/vaultkeycloak"
     }
 
     keycloak = {
@@ -31,10 +31,12 @@ resource "keycloak_realm" "demo" {
 
 }
 module "keycloak_vault_config" {
-
-  source = "../terraform/tfmodule-vault-keycloak-config"
-  realm           = keycloak_realm.realm
-  vault_client_id = locals.keycloak_vault_client_id
+  depends_on = [
+    keycloak_realm.demo
+  ]
+  source = "../terraform/tfmodule-vaultkeycloak-config"
+  realm           = keycloak_realm.demo.realm
+  vault_client_id = local.keycloak_vault_client_id
 
 }
 
@@ -43,11 +45,11 @@ provider "vaultkeycloak" {
   vault_address = "http://127.0.0.1:8200"
   vault_token   = "root"
 }
-resource "vault_keycloak_secret_backend" "default" {
-  client_id     = locals.keycloak_vault_client_id
+resource "vaultkeycloak_secret_backend" "default" {
+  client_id     = local.keycloak_vault_client_id
   client_secret = "vault123"
   server_url    = "http://127.0.0.1:8080"
-  realm         = "my-realm"
+  realm         = keycloak_realm.demo.realm
   path          = "keycloak-secrets"
   provider      = vaultkeycloak
 

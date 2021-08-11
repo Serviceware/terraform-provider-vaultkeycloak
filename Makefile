@@ -1,7 +1,7 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
 HOSTNAME=github.com
 NAMESPACE=Serviceware
-NAME=vault-keycloak
+NAME=vaultkeycloak
 BINARY=terraform-provider-${NAME}
 VERSION=0.1.0
 OS_ARCH=linux_amd64

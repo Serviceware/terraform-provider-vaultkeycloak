@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 
-	"github.com/Serviceware/terraform-provider-vault-keycloak/vaultkeycloak"
+	"github.com/Serviceware/terraform-provider-vaultkeycloak/vaultkeycloak"
 )
 
 func main() {

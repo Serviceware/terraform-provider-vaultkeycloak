@@ -23,7 +23,7 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"vault_keycloak_secret_backend": resourceKeycloakSecretBackend(),
+			"vaultkeycloak_secret_backend": resourceKeycloakSecretBackend(),
 		},
 		DataSourcesMap:       map[string]*schema.Resource{},
 		ConfigureContextFunc: providerConfigure,
@@ -52,6 +52,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	}
 	if vault_token != "" {
 		client.SetToken(vault_token)
+
 	}
 
 	return client, diags

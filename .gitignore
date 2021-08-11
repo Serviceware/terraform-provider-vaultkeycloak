@@ -1,4 +1,4 @@
-terraform-provider-vault-keycloak
+terraform-provider-vaultkeycloak
 # Binaries for programs and plugins
 *.exe
 *.exe~
