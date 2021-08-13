@@ -11,12 +11,9 @@ import (
 
 func TestAccVaultKeycloakBasic(t *testing.T) {
 
-	os.Setenv("TF_ACC", "1") // needs to be set otherwise resource.Test doesn't do anything
-	// addr, token, cleanup := createTestVault(t)
-	// defer cleanup()
+	cleanup := dockerSetup(t)
+	defer cleanup()
 
-	// os.Setenv("VAULT_ADDR", addr)
-	// os.Setenv("VAULT_TOKEN", token)
 	os.Setenv("VAULT_ADDR", "http://127.0.0.1:8200")
 	os.Setenv("VAULT_TOKEN", "root")
 	resource.Test(t, resource.TestCase{
@@ -37,9 +34,9 @@ func testAccCheckVaultKeycloakSecretBackendConfigBasic() string {
 	return `
 	resource "vaultkeycloak_secret_backend" "test_backend" {
 		client_id     = "vault"
-		client_secret = "6d1c7871-25a3-44d3-941e-d759fec65170"
-		server_url    = "http://localhost:8080"
-		realm         = "demo"
+		client_secret = "vault"
+		server_url    = "http://keycloak:8080"
+		realm         = "master"
 		path          = "keycloak-secrets"
 	  }
 	`
