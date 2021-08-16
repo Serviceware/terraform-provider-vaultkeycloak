@@ -5,9 +5,9 @@ description: |-
   The vaultkeycloak_secret_backend resource allows you to configure the secret backend engine.
 ---
 
-# Resource `hashicups_order`
+# Resource `hashicvaultkeycloak_secret_backendups_order`
 
-The order resource allows you to configure a secret backend engine.
+The vaultkeycloak_secret_backend resource allows you to configure a secret backend engine.
 
 ## Example Usage
 
