@@ -55,6 +55,11 @@ func dockerSetup(t *testing.T) func() {
 		defer compose.Down()
 		t.Fatal(err)
 	}
+	err = setupAdminClient("master", "vault2", "vault2")
+	if err != nil {
+		defer compose.Down()
+		t.Fatal(err)
+	}
 
 	return func() {
 		defer compose.Down()

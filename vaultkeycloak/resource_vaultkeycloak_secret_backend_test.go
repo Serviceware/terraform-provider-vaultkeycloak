@@ -24,6 +24,13 @@ func TestAccVaultKeycloakBasic(t *testing.T) {
 				Config: testAccCheckVaultKeycloakSecretBackendConfigBasic("master", "vault", "vault"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVaultKeycloakSecretBackendExists("vaultkeycloak_secret_backend.test_backend"),
+					resource.TestCheckResourceAttr("vaultkeycloak_secret_backend.test_backend", "client_id", "vault"),
+				),
+			},
+			{
+				Config: testAccCheckVaultKeycloakSecretBackendConfigBasic("master", "vault2", "vault2"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("vaultkeycloak_secret_backend.test_backend", "client_id", "vault2"),
 				),
 			},
 		},

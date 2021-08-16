@@ -1,8 +1,8 @@
 terraform {
   required_providers {
-    vaultkeycloak = {
-      version = "0.1.0"
-      source  = "Serviceware/vaultkeycloak"
+ vaultkeycloak = {
+      source = "Serviceware/vaultkeycloak"
+      version = "0.2.0"
     }
 
     keycloak = {
@@ -22,6 +22,7 @@ provider "keycloak" {
 
 locals {
   keycloak_vault_client_id = "vault"
+  keycloak_vault_client_secret = "secret123"
 }
 
 resource "keycloak_realm" "demo" {
@@ -34,9 +35,13 @@ module "keycloak_vault_config" {
   depends_on = [
     keycloak_realm.demo
   ]
-  source = "../terraform/tfmodule-vaultkeycloak-config"
+
+  source  = "Serviceware/keycloak-client/vaultkeycloak"
+  version = "0.1.1"
+
   realm           = keycloak_realm.demo.realm
   vault_client_id = local.keycloak_vault_client_id
+  vault_client_secret = local.keycloak_vault_client_secret
 
 }
 
@@ -47,14 +52,28 @@ provider "vaultkeycloak" {
 }
 resource "vaultkeycloak_secret_backend" "default" {
   client_id     = local.keycloak_vault_client_id
-  client_secret = "vault123"
-  server_url    = "http://127.0.0.1:8080"
+  client_secret = local.keycloak_vault_client_secret
+  server_url    = "http://keycloak:8080"
   realm         = keycloak_realm.demo.realm
   path          = "keycloak-secrets"
-  provider      = vaultkeycloak
+
 
   depends_on = [
     module.keycloak_vault_config
   ]
+
+}
+
+
+
+#### test client
+resource "keycloak_openid_client" "test_client" {
+  realm_id            = keycloak_realm.demo.realm
+  client_id           = "test-client"
+
+  name                = "test client"
+  enabled             = true
+
+  access_type         = "CONFIDENTIAL"
 
 }
