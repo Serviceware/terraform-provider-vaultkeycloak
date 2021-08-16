@@ -17,12 +17,7 @@ import (
 func dockerSetup(t *testing.T) func() {
 
 	t.Helper()
-	keycloakUsername := "admin"
-	keycloakPassword := "admin"
-	client_id := "vault"
-	client_secret := "vault"
-	realm := "master"
-	serviceAccountsEnabled := true
+
 	composeFilePaths := []string{"../testing/docker-compose.yaml"}
 	identifier := strings.ToLower(uuid.New().String())
 
@@ -55,35 +50,7 @@ func dockerSetup(t *testing.T) func() {
 		defer compose.Down()
 		t.Fatal(err)
 	}
-	keycloakServerUrl := fmt.Sprintf("http://%s:%s", "127.0.0.1", "8080")
-	keycloakCLient := gocloak.NewClient(keycloakServerUrl)
-	ctx := context.Background()
-	loginToken, err := keycloakCLient.Login(ctx, "admin-cli", "", "master", keycloakUsername, keycloakPassword)
-	if err != nil {
-		defer compose.Down()
-		t.Fatal(err)
-	}
-	createClientResponse, err := keycloakCLient.CreateClient(ctx, loginToken.AccessToken, realm, gocloak.Client{
-		ClientID:               &client_id,
-		Secret:                 &client_secret,
-		ServiceAccountsEnabled: &serviceAccountsEnabled,
-	})
-	if err != nil {
-		defer compose.Down()
-		t.Fatal(err)
-	}
-	clientServiceAccount, err := keycloakCLient.GetClientServiceAccount(ctx, loginToken.AccessToken, realm, createClientResponse)
-	if err != nil {
-		defer compose.Down()
-		t.Fatal(err)
-	}
-	adminRole, err := keycloakCLient.GetRealmRole(ctx, loginToken.AccessToken, realm, "admin")
-	if err != nil {
-		defer compose.Down()
-		t.Fatal(err)
-	}
-	err = keycloakCLient.AddRealmRoleToUser(ctx, loginToken.AccessToken, realm, *clientServiceAccount.ID, []gocloak.Role{*adminRole})
-
+	err = setupAdminClient("master", "vault", "vault")
 	if err != nil {
 		defer compose.Down()
 		t.Fatal(err)
@@ -93,4 +60,36 @@ func dockerSetup(t *testing.T) func() {
 		defer compose.Down()
 	}
 
+}
+func setupAdminClient(realm, client_id, client_secret string) error {
+	keycloakServerUrl := fmt.Sprintf("http://%s:%s", "127.0.0.1", "8080")
+	keycloakCLient := gocloak.NewClient(keycloakServerUrl)
+	ctx := context.Background()
+	loginToken, err := keycloakCLient.Login(ctx, "admin-cli", "", realm, "admin", "admin")
+	if err != nil {
+		return err
+	}
+	serviceAccountsEnabled := true
+	createClientResponse, err := keycloakCLient.CreateClient(ctx, loginToken.AccessToken, realm, gocloak.Client{
+		ID:                     &client_id,
+		ClientID:               &client_id,
+		Secret:                 &client_secret,
+		ServiceAccountsEnabled: &serviceAccountsEnabled,
+	})
+	if err != nil {
+		return err
+	}
+	clientServiceAccount, err := keycloakCLient.GetClientServiceAccount(ctx, loginToken.AccessToken, realm, createClientResponse)
+	if err != nil {
+		return err
+	}
+	adminRole, err := keycloakCLient.GetRealmRole(ctx, loginToken.AccessToken, realm, "admin")
+	if err != nil {
+		return err
+	}
+	err = keycloakCLient.AddRealmRoleToUser(ctx, loginToken.AccessToken, realm, *clientServiceAccount.ID, []gocloak.Role{*adminRole})
+	if err != nil {
+		return err
+	}
+	return nil
 }

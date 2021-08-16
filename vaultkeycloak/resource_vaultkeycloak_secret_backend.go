@@ -95,6 +95,33 @@ func resourceKeycloakSecretRead(ctx context.Context, d *schema.ResourceData, m i
 }
 
 func resourceKeycloakSecretUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
+	client := m.(*api.Client)
+
+	path := d.Id()
+
+	if d.HasChangesExcept("path") {
+
+		server_url := d.Get("server_url").(string)
+		realm := d.Get("realm").(string)
+		client_id := d.Get("client_id").(string)
+		client_secret := d.Get("client_secret").(string)
+
+		c := client.Logical()
+
+		data := map[string]interface{}{
+			"server_url":    server_url,
+			"realm":         realm,
+			"client_id":     client_id,
+			"client_secret": client_secret,
+		}
+		_, err := c.Write(fmt.Sprintf("%s/config/connection", path), data)
+
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	return resourceKeycloakSecretRead(ctx, d, m)
 }
 
