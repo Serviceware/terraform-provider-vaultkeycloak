@@ -1,8 +1,21 @@
+# Terraform Provider for Vault Keycloak engine
+
+This terraform provider allows you to configure the Vault Keycloak plugin
+
+https://github.com/Serviceware/vault-plugin-secrets-keycloak
+
+## Demo
+
+Nav into demo
+```
+cd demo
+```
+
 
 Start keycloak+vault
 
 ```
-docker-compose up -d --build
+docker-compose -f ../testing/docker-compose.yaml up -d --build
 ```
 
 Enable keycloak
