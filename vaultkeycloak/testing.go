@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Nerzal/gocloak/v8"
+	"github.com/Nerzal/gocloak/v11"
 	"github.com/google/uuid"
 	"github.com/hashicorp/vault/api"
 	tc "github.com/testcontainers/testcontainers-go"
