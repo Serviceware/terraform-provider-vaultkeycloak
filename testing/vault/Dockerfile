@@ -4,7 +4,7 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key  add -
 RUN apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 RUN apt-get update && apt-get install vault -y
 
-ARG pluginversion=0.1.0
+ARG pluginversion=0.1.1
 RUN mkdir -p /opt/vault-plugins
 RUN curl -L -o vault-plugin-secrets-keycloak.zip \
     https://github.com/Serviceware/vault-plugin-secrets-keycloak/releases/download/v${pluginversion}/vault-plugin-secrets-keycloak_${pluginversion}_linux_amd64.zip && \
