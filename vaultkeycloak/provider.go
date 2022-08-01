@@ -2,6 +2,9 @@ package vaultkeycloak
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -76,10 +79,18 @@ func GetToken(d *schema.ResourceData) (string, error) {
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	vault_address := d.Get("vault_address").(string)
-	vault_token := d.GetToken()
-
-	// Warning or errors can be collected in a slice type
+	vault_token, err := GetToken(d)
 	var diags diag.Diagnostics
+
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Unable to retrieve vault token",
+			Detail:   "Unable connect Vault client",
+		})
+		return nil, diags
+	}
+	// Warning or errors can be collected in a slice type
 
 	config := api.DefaultConfig()
 	if vault_address != "" {
