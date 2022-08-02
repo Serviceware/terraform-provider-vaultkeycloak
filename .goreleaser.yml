@@ -47,6 +47,7 @@ signs:
       - "${signature}"
       - "--detach-sign"
       - "${artifact}"
+      - "--no-tty"
 release:
   # If you want to manually examine the release before its live, uncomment this line:
   # draft: true
