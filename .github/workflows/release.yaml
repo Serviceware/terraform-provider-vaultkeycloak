@@ -32,20 +32,26 @@
         -
           name: Import GPG key
           id: import_gpg
-          uses: crazy-max/ghaction-import-gpg@v5.1.0
+          uses: crazy-max/ghaction-import-gpg@v4
           with:
             gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
             passphrase: ${{ secrets.GPG_PASSPHRASE }}
         - 
-          name: Debug tty
-          run: echo $(tty)
-        -
-          name: Run GoReleaser
-          uses: goreleaser/goreleaser-action@v3.0.0
+          name: Check GoReleaser
+          uses: goreleaser/goreleaser-action@v2
           with:
             version: latest
-            args: release --rm-dist
+            args: check --debug
           env:
             GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-            # GitHub sets this automatically
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # -
+        #   name: Run GoReleaser
+        #   uses: goreleaser/goreleaser-action@v2
+        #   with:
+        #     version: latest
+        #     args: release --rm-dist
+        #   env:
+        #     GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+        #     # GitHub sets this automatically
+        #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
