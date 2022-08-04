@@ -36,6 +36,9 @@
           with:
             gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
             passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        - 
+          name: Debug tty
+          run: echo $(tty)
         -
           name: Run GoReleaser
           uses: goreleaser/goreleaser-action@v3.0.0
