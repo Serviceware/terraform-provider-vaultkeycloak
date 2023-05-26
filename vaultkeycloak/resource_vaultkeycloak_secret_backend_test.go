@@ -42,7 +42,7 @@ func testAccCheckVaultKeycloakSecretBackendConfigBasic(realm, client_id, client_
 	resource "vaultkeycloak_secret_backend" "test_backend" {
 		client_id     = "%s"
 		client_secret = "%s"
-		server_url    = "http://keycloak:8080"
+		server_url    = "http://keycloak:8080/auth"
 		realm         = "%s"
 		path          = "keycloak-secrets"
 	  }

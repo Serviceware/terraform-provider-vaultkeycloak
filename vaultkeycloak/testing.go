@@ -10,6 +10,7 @@ import (
 	"github.com/Nerzal/gocloak/v13"
 	"github.com/google/uuid"
 	"github.com/hashicorp/vault/api"
+	"github.com/stretchr/testify/assert"
 	tcc "github.com/testcontainers/testcontainers-go/modules/compose"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
@@ -18,19 +19,26 @@ func dockerSetup(t *testing.T) func() {
 
 	t.Helper()
 
-	composeFilePaths := []string{"../testing/docker-compose.yaml"}
-	identifier := strings.ToLower(uuid.New().String())
+	identifier := tcc.StackIdentifier("vaultkeycloak-" + strings.ToLower(uuid.New().String()))
+	ctx, cancel := context.WithCancel(context.Background())
 
-	compose := tcc.NewLocalDockerCompose(composeFilePaths, identifier)
+	compose, err := tcc.NewDockerComposeWith(tcc.WithStackFiles("../testing/docker-compose.yaml"), identifier)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Cleanup(func() {
+		assert.NoError(t, compose.Down(context.Background(), tcc.RemoveOrphans(true), tcc.RemoveImagesLocal), "compose.Down()")
+	})
+	t.Cleanup(cancel)
+
 	execError := compose.
-		WithCommand([]string{"up", "-d", "--build"}).
-		WithExposedService("vault-1", 8200, wait.NewHTTPStrategy("/v1/sys/health").WithPort("8200/tcp")).
-		WithExposedService("keycloak-1", 8080, wait.NewHTTPStrategy("/").WithPort("8080/tcp").WithStartupTimeout(3*time.Minute)).
-		Invoke()
+		WaitForService("vault", wait.NewHTTPStrategy("/v1/sys/health").WithPort("8200/tcp")).
+		WaitForService("keycloak", wait.NewHTTPStrategy("/").WithPort("8080/tcp").WithStartupTimeout(3*time.Minute)).
+		Up(ctx, tcc.Wait(true))
 
-	if execError.Error != nil {
-		defer compose.Down()
-		t.Fatal(execError.Error)
+	if execError != nil {
+		t.Fatalf("compose.Up() failed with %s", execError.Error())
 	}
 
 	vaultConfig := api.DefaultConfig()
@@ -38,7 +46,6 @@ func dockerSetup(t *testing.T) func() {
 
 	vaultClient, err := api.NewClient(vaultConfig)
 	if err != nil {
-		defer compose.Down()
 		t.Fatal(err)
 	}
 	vaultClient.SetToken("root")
@@ -47,22 +54,19 @@ func dockerSetup(t *testing.T) func() {
 		Type: "vault-plugin-secrets-keycloak",
 	})
 	if err != nil {
-		defer compose.Down()
 		t.Fatal(err)
 	}
 	err = setupAdminClient("master", "vault", "vault")
 	if err != nil {
-		defer compose.Down()
 		t.Fatal(err)
 	}
 	err = setupAdminClient("master", "vault2", "vault2")
 	if err != nil {
-		defer compose.Down()
 		t.Fatal(err)
 	}
 
 	return func() {
-		defer compose.Down()
+		defer compose.Down(ctx, tcc.RemoveOrphans(true), tcc.RemoveImagesLocal)
 	}
 
 }

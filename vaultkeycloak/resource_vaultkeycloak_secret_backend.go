@@ -17,24 +17,24 @@ func resourceKeycloakSecretBackend() *schema.Resource {
 		DeleteContext: resourceKeycloakSecretDelete,
 		Schema: map[string]*schema.Schema{
 
-			"server_url": &schema.Schema{
+			"server_url": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"realm": &schema.Schema{
+			"realm": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"client_id": &schema.Schema{
+			"client_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"client_secret": &schema.Schema{
+			"client_secret": {
 				Type:      schema.TypeString,
 				Required:  true,
 				Sensitive: true,
 			},
-			"path": &schema.Schema{
+			"path": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "keycloak",

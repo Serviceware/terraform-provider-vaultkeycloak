@@ -7,7 +7,7 @@ terraform {
 
     keycloak = {
       source  = "mrparkers/keycloak"
-      version = "3.3.0"
+      version = "4.2.0"
     }
   }
 }
@@ -18,6 +18,7 @@ provider "keycloak" {
   username  = "admin"
   password  = "admin"
   url       = "http://localhost:8080"
+  base_path = "/auth"
 }
 
 locals {
@@ -53,7 +54,7 @@ provider "vaultkeycloak" {
 resource "vaultkeycloak_secret_backend" "default" {
   client_id     = local.keycloak_vault_client_id
   client_secret = local.keycloak_vault_client_secret
-  server_url    = "http://keycloak:8080"
+  server_url    = "http://keycloak:8080/auth"
   realm         = keycloak_realm.demo.realm
   path          = "keycloak-secrets"
 
