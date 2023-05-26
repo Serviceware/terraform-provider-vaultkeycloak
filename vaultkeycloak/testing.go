@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Nerzal/gocloak/v11"
+	"github.com/Nerzal/gocloak/v13"
 	"github.com/google/uuid"
 	"github.com/hashicorp/vault/api"
-	tc "github.com/testcontainers/testcontainers-go"
+	tcc "github.com/testcontainers/testcontainers-go/modules/compose"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
@@ -21,11 +21,11 @@ func dockerSetup(t *testing.T) func() {
 	composeFilePaths := []string{"../testing/docker-compose.yaml"}
 	identifier := strings.ToLower(uuid.New().String())
 
-	compose := tc.NewLocalDockerCompose(composeFilePaths, identifier)
+	compose := tcc.NewLocalDockerCompose(composeFilePaths, identifier)
 	execError := compose.
 		WithCommand([]string{"up", "-d", "--build"}).
-		WithExposedService("vault_1", 8200, wait.NewHTTPStrategy("/v1/sys/health").WithPort("8200/tcp")).
-		WithExposedService("keycloak_1", 8080, wait.NewHTTPStrategy("/").WithPort("8080/tcp").WithStartupTimeout(3*time.Minute)).
+		WithExposedService("vault-1", 8200, wait.NewHTTPStrategy("/v1/sys/health").WithPort("8200/tcp")).
+		WithExposedService("keycloak-1", 8080, wait.NewHTTPStrategy("/").WithPort("8080/tcp").WithStartupTimeout(3*time.Minute)).
 		Invoke()
 
 	if execError.Error != nil {
@@ -67,7 +67,7 @@ func dockerSetup(t *testing.T) func() {
 
 }
 func setupAdminClient(realm, client_id, client_secret string) error {
-	keycloakServerUrl := fmt.Sprintf("http://%s:%s", "127.0.0.1", "8080")
+	keycloakServerUrl := fmt.Sprintf("http://%s:%s/auth", "127.0.0.1", "8080")
 	keycloakCLient := gocloak.NewClient(keycloakServerUrl)
 	ctx := context.Background()
 	loginToken, err := keycloakCLient.Login(ctx, "admin-cli", "", realm, "admin", "admin")
