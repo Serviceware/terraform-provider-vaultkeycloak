@@ -56,7 +56,7 @@ jobs:
     steps:
 
     - name: Set up Go
-      uses: actions/setup-go@4
+      uses: actions/setup-go@v4
       with:
         go-version: '1.20.4'
       id: go
