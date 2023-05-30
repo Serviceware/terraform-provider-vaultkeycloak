@@ -1,12 +1,9 @@
 package vaultkeycloak
 
 import (
-	"fmt"
-	"os"
-	"testing"
-
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 	"time"
