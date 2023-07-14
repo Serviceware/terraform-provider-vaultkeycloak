@@ -87,6 +87,10 @@ func resourceKeycloakSecretRead(ctx context.Context, d *schema.ResourceData, m i
 		return diag.FromErr(err)
 	}
 
+	if secret == nil {
+		d.SetId("")
+		return diags
+	}
 	d.Set("realm", secret.Data["realm"])
 	d.Set("server_url", secret.Data["server_url"])
 	d.Set("client_id", secret.Data["client_id"])
