@@ -38,6 +38,7 @@ func resourceKeycloakSecretBackend() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "keycloak",
+				ForceNew: true,
 			},
 		},
 	}
