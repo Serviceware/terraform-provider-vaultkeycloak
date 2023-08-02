@@ -154,7 +154,7 @@ func resourceKeycloakSecretPerRealmConfigDelete(ctx context.Context, d *schema.R
 	path := d.Get("path").(string)
 	realm := d.Get("realm").(string)
 
-	_, err := c.Delete(calcConfigPath(path, realm))
+	_, err := c.Delete(calcId(path, realm))
 
 	if err != nil {
 		return diag.FromErr(err)
