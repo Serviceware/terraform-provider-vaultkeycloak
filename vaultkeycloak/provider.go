@@ -16,7 +16,7 @@ import (
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"vault_address": &schema.Schema{
+			"vault_address": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -26,14 +26,15 @@ func Provider() *schema.Provider {
 				Default:     false,
 				Description: "If true, adds the value of the `address` argument to the Terraform process environment.",
 			},
-			"vault_token": &schema.Schema{
+			"vault_token": {
 				Type:      schema.TypeString,
 				Optional:  true,
 				Sensitive: true,
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"vaultkeycloak_secret_backend": resourceKeycloakSecretBackend(),
+			"vaultkeycloak_secret_backend":                  resourceKeycloakSecretBackend(),
+			"vaultkeycloak_secret_backend_per_realm_config": resourceKeycloakSecretBackendPerRealmConfig(),
 		},
 		DataSourcesMap:       map[string]*schema.Resource{},
 		ConfigureContextFunc: providerConfigure,
