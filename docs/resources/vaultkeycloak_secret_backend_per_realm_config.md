@@ -1,18 +1,20 @@
 ---
-page_title: "vaultkeycloak_secret_backend Resource - terraform-provider-vaultkeycloak"
+page_title: "vaultkeycloak_secret_backend_per_realm_config Resource - terraform-provider-vaultkeycloak"
 subcategory: ""
 description: |-
   The vaultkeycloak_secret_backend resource allows you to configure the secret backend engine.
 ---
 
-# Resource `vaultkeycloak_secret_backend`
+# Resource `vaultkeycloak_secret_backend_per_realm_config`
 
-The vaultkeycloak_secret_backend resource allows you to configure a secret backend engine.
+The vaultkeycloak_secret_backend_per_realm_config resource allows you to configure a secret backend engine for a specific realm.
+
+This is useful if different realm have different server urls or different client ids.
 
 ## Example Usage
 
 ```terraform
-resource "vaultkeycloak_secret_backend" "my_realm_backend" {
+resource "vaultkeycloak_secret_backend_per_realm_config" "my_realm_config" {
   client_id     = "vault"
   client_secret = "secret123"
   server_url    = "http://127.0.0.1:8080/auth"
