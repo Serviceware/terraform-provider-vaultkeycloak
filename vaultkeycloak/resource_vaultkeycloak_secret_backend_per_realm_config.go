@@ -2,7 +2,9 @@ package vaultkeycloak
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -70,7 +72,7 @@ func resourceKeycloakSecretPerRealmConfigCreate(ctx context.Context, d *schema.R
 	}
 	id := calcId(path, realm)
 	d.SetId(id)
-	resourceKeycloakSecretRead(ctx, d, m)
+	resourceKeycloakSecretPerRealmConfigRead(ctx, d, m)
 	return diags
 }
 
@@ -78,11 +80,12 @@ func calcId(path string, realm string) string {
 	id := fmt.Sprintf("%s/realms/%s", path, realm)
 	return id
 }
-func pathAndRealmFromId(id string) (string, string) {
-	var path string
-	var realm string
-	fmt.Sscanf(id, "%s/realms/%s", &path, &realm)
-	return path, realm
+func pathAndRealmFromId(id string) (string, string, error) {
+	parts := strings.Split(id, "/realms/")
+	if len(parts) != 2 {
+		return "", "", errors.New("cannot parse id into path and realm")
+	}
+	return parts[0], parts[1], nil
 }
 
 func calcConfigPath(path string, realm string) string {
@@ -96,7 +99,10 @@ func resourceKeycloakSecretPerRealmConfigRead(ctx context.Context, d *schema.Res
 
 	client := m.(*api.Client)
 	c := client.Logical()
-	path, realm := pathAndRealmFromId(d.Id())
+	path, realm, err := pathAndRealmFromId(d.Id())
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	secret, err := c.Read(calcConfigPath(path, realm))
 
@@ -120,7 +126,10 @@ func resourceKeycloakSecretPerRealmConfigUpdate(ctx context.Context, d *schema.R
 
 	client := m.(*api.Client)
 
-	path, realm := pathAndRealmFromId(d.Id())
+	path, realm, err := pathAndRealmFromId(d.Id())
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	if d.HasChangesExcept("path", "realm") {
 
@@ -154,7 +163,7 @@ func resourceKeycloakSecretPerRealmConfigDelete(ctx context.Context, d *schema.R
 	path := d.Get("path").(string)
 	realm := d.Get("realm").(string)
 
-	_, err := c.Delete(calcId(path, realm))
+	_, err := c.Delete(calcConfigPath(path, realm))
 
 	if err != nil {
 		return diag.FromErr(err)
