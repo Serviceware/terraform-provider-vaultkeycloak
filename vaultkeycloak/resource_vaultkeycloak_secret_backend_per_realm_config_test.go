@@ -22,8 +22,8 @@ func TestAccVaultKeycloakBasicPerRealm(t *testing.T) {
 			{
 				Config: testAccCheckVaultKeycloakSecretBackendConfigBasicPerRealm("master", "vault", "vault"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckVaultKeycloakSecretBackendExists("vaultkeycloak_secret_backend_per_realm_config.test_backend"),
-					resource.TestCheckResourceAttr("vaultkeycloak_secret_backend_per_realm_config.test_backend", "client_id", "vault"),
+					testAccCheckVaultKeycloakSecretBackendExists("vaultkeycloak_secret_backend_per_realm_config.test_config_for_master"),
+					resource.TestCheckResourceAttr("vaultkeycloak_secret_backend_per_realm_config.test_config_for_master", "client_id", "vault"),
 				),
 			},
 		},
@@ -32,7 +32,7 @@ func TestAccVaultKeycloakBasicPerRealm(t *testing.T) {
 
 func testAccCheckVaultKeycloakSecretBackendConfigBasicPerRealm(realm, client_id, client_secret string) string {
 	return fmt.Sprintf(`
-	resource "vaultkeycloak_secret_backend_per_realm_config" "test_backend" {
+	resource "vaultkeycloak_secret_backend_per_realm_config" "test_config_for_master" {
 		client_id     = "%s"
 		client_secret = "%s"
 		server_url    = "http://keycloak:8080/auth"
