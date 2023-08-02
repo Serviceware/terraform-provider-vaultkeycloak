@@ -48,6 +48,10 @@ func GetToken(d *schema.ResourceData) (string, error) {
 		return token, nil
 	}
 
+	if token := os.Getenv("VAULT_TOKEN"); token != "" {
+		return token, nil
+	}
+
 	if addAddr := d.Get("add_address_to_env").(string); addAddr == "true" {
 		if addr := d.Get("vault_address").(string); addr != "" {
 			addrEnvVar := "VAULT_ADDR"
