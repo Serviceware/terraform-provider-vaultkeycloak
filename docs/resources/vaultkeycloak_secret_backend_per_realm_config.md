@@ -21,6 +21,7 @@ resource "vaultkeycloak_secret_backend_per_realm_config" "my_realm_config" {
   realm         = "my-realm"
   path          = "keycloak-secrets"
 
+  ignore_connectivity_check = true # optional
 }
 ```
 
@@ -31,6 +32,7 @@ resource "vaultkeycloak_secret_backend_per_realm_config" "my_realm_config" {
 - `server_url` - (Required) The server url to the keycloak server. For older keycloaks this means the server url usually ends with `/auth`
 - `realm` - (Required) The realm from which the secrets should be read
 - `path` - (Required) The path under which the engine is registered
+- `ignore_connectivity_check` - (Optional) If set to true, the plugin will not check the connectivity to the keycloak server. This is useful if you want to use the plugin in a vault cluster that is not able to reach the keycloak server. Defaults to false.
 
 
 ## Attributes Reference
