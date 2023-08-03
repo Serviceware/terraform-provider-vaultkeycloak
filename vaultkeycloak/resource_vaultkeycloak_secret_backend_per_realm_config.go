@@ -42,6 +42,11 @@ func resourceKeycloakSecretBackendPerRealmConfig() *schema.Resource {
 				Default:  "keycloak",
 				ForceNew: true,
 			},
+			"ignore_connectivity_check": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 		},
 	}
 }
@@ -55,14 +60,16 @@ func resourceKeycloakSecretPerRealmConfigCreate(ctx context.Context, d *schema.R
 	client_id := d.Get("client_id").(string)
 	client_secret := d.Get("client_secret").(string)
 	path := d.Get("path").(string)
+	ignore_connectivity_check := d.Get("ignore_connectivity_check").(bool)
 
 	client := m.(*api.Client)
 	c := client.Logical()
 
 	data := map[string]interface{}{
-		"server_url":    server_url,
-		"client_id":     client_id,
-		"client_secret": client_secret,
+		"server_url":                server_url,
+		"client_id":                 client_id,
+		"client_secret":             client_secret,
+		"ignore_connectivity_check": ignore_connectivity_check,
 	}
 	configPath := calcConfigPath(path, realm)
 	_, err := c.Write(configPath, data)
