@@ -69,7 +69,7 @@ func testAccCheckVaultKeycloakSecretBackendConfigBasicPerRealmIgnoreConnect(real
 		client_secret = "%s"
 		server_url    = "http://keycloak:8080/auth"
 		realm         = "%s"
-		path          = "keycloak-secrets",
+		path          = "keycloak-secrets"
 		ignore_connectivity_check = true
 	  }
 	`, client_id, client_secret, realm)
