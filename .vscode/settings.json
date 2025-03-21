@@ -1,3 +1,9 @@
 {
-    "makefile.extensionOutputFolder": "./.vscode"
+    "makefile.extensionOutputFolder": "./.vscode",
+
+    "yaml.schemas": {
+        "https://goreleaser.com/static/schema.json": [
+            ".goreleaser.yml"
+        ]
+    }
 }
