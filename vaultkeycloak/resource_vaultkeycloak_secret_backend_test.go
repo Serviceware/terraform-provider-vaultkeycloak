@@ -127,7 +127,7 @@ func dockerSetup(t *testing.T) func() {
 
 	execError := compose.
 		WaitForService("vault", wait.NewHTTPStrategy("/v1/sys/health").WithPort("8200/tcp")).
-		WaitForService("keycloak", wait.NewHTTPStrategy("/").WithPort("8080/tcp").WithStartupTimeout(3*time.Minute)).
+		WaitForService("keycloak", wait.NewHTTPStrategy("/auth/").WithPort("8080/tcp").WithStartupTimeout(3*time.Minute)).
 		Up(ctx, tcc.Wait(true))
 
 	if execError != nil {

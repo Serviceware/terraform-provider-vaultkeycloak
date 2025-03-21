@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/vault/api"
-	"github.com/hashicorp/vault/command/config"
+	"github.com/hashicorp/vault/api/cliconfig"
 )
 
 // Provider -
@@ -71,7 +71,7 @@ func GetToken(d *schema.ResourceData) (string, error) {
 	}
 
 	// Use ~/.vault-token, or the configured token helper.
-	tokenHelper, err := config.DefaultTokenHelper()
+	tokenHelper, err := cliconfig.DefaultTokenHelper()
 	if err != nil {
 		return "", fmt.Errorf("error getting token helper: %s", err)
 	}

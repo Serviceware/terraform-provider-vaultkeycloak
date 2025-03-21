@@ -1,13 +1,14 @@
 services:
   keycloak:
-    image: quay.io/keycloak/keycloak:16.1.1
+    image: quay.io/keycloak/keycloak:26.1.4
     ports: 
     - "8080:8080"
+    - "9000:9000"
+    command: ["start-dev", "--http-relative-path", "/auth"]
     environment: 
-    - KEYCLOAK_USER=admin
-    - KEYCLOAK_PASSWORD=admin
-    - DB_VENDOR=h2
-    
+    - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+    - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+
   vault:
     build:
       context: vault/
