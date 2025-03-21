@@ -20,13 +20,13 @@
       steps:
         -
           name: Checkout
-          uses: actions/checkout@v3.0.2
+          uses: actions/checkout@v4
         -
           name: Unshallow
           run: git fetch --prune --unshallow
         -
           name: Set up Go
-          uses: actions/setup-go@v4
+          uses: actions/setup-go@v5
           with:
             go-version-file: 'go.mod'
             cache: true
@@ -40,10 +40,10 @@
             passphrase: ${{ secrets.PASSPHRASE }}
         -
           name: Run GoReleaser
-          uses: goreleaser/goreleaser-action@v4.2.0
+          uses: goreleaser/goreleaser-action@v6
           with:
             version: latest
-            args: release --rm-dist
+            args: release --clean
           env:
             GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
