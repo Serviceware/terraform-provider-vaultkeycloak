@@ -19,14 +19,22 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-func TestAccVaultKeycloakBasic(t *testing.T) {
+func TestAccVaultKeycloakBasic26_1_4(t *testing.T) {
+	testWithVersion(t, "26.1.4")
+}
 
-	cleanup := dockerSetup(t)
-	defer cleanup()
-
+func TestAccVaultKeycloakBasic25_0(t *testing.T) {
+	testWithVersion(t, "25.0")
+}
+func testWithVersion(t *testing.T, keycloakVersion string) {
 	os.Setenv("VAULT_ADDR", "http://127.0.0.1:8200")
 	os.Setenv("VAULT_TOKEN", "root")
+
+	cleanup := dockerSetupWithKeycloakVersion(t, keycloakVersion)
+	defer cleanup()
+
 	resource.Test(t, resource.TestCase{
+
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
@@ -109,8 +117,15 @@ func testAccCheckVaultKeycloakSecretBackendExists(n string) resource.TestCheckFu
 }
 
 func dockerSetup(t *testing.T) func() {
+	t.Helper()
+	return dockerSetupWithKeycloakVersion(t, "26.1.4")
+}
+func dockerSetupWithKeycloakVersion(t *testing.T, keycloakVersion string) func() {
 
 	t.Helper()
+	if keycloakVersion == "" {
+		t.Fatal("keycloakVersion is required")
+	}
 
 	identifier := tcc.StackIdentifier("vaultkeycloak-" + strings.ToLower(uuid.New().String()))
 	ctx, cancel := context.WithCancel(context.Background())
@@ -124,8 +139,12 @@ func dockerSetup(t *testing.T) func() {
 		assert.NoError(t, compose.Down(context.Background(), tcc.RemoveOrphans(true), tcc.RemoveImagesLocal), "compose.Down()")
 	})
 	t.Cleanup(cancel)
-
+	envs := map[string]string{}
+	if keycloakVersion != "" {
+		envs["KEYCLOAK_VERSION"] = keycloakVersion
+	}
 	execError := compose.
+		WithEnv(envs).
 		WaitForService("vault", wait.NewHTTPStrategy("/v1/sys/health").WithPort("8200/tcp")).
 		WaitForService("keycloak", wait.NewHTTPStrategy("/auth/").WithPort("8080/tcp").WithStartupTimeout(3*time.Minute)).
 		Up(ctx, tcc.Wait(true))
