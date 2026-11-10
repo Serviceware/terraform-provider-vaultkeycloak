@@ -20,26 +20,26 @@
       steps:
         -
           name: Checkout
-          uses: actions/checkout@v4
+          uses: actions/checkout@v7
         -
           name: Unshallow
           run: git fetch --prune --unshallow
         -
           name: Set up Go
-          uses: actions/setup-go@v5
+          uses: actions/setup-go@v7
           with:
             go-version-file: 'go.mod'
             cache: true
         -
           name: Import GPG key
           id: import_gpg
-          uses: crazy-max/ghaction-import-gpg@v4
+          uses: crazy-max/ghaction-import-gpg@v7
           with:
             gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
             passphrase: ${{ secrets.PASSPHRASE }}
         -
           name: Run GoReleaser
-          uses: goreleaser/goreleaser-action@v6
+          uses: goreleaser/goreleaser-action@v7
           with:
             version: latest
             args: release --clean --verbose
